@@ -1,0 +1,77 @@
+services:
+  backend:
+    build: .
+    container_name: my-pretty-ai-core
+    restart: always
+    env_file:
+      - ./env/.env
+    ports:
+      - "8000:8000"
+    # depends_on:
+    #   - db
+    #   - gcb-parser
+    volumes:
+      - .:/app
+      # - /var/www/uploads:/app/uploads
+    networks:
+      - my-pretty-ai-net
+  
+  # gcb-parser:
+  #   build: ./gcb-parser
+  #   container_name: burkit-gcb-parser-dev
+  #   restart: always
+  #   env_file:
+  #     - ./gcb-parser/.env
+  #   ports:
+  #     - "8100:8100"
+  #   volumes:
+  #     - ./gcb-parser:/app
+  #   networks:
+  #     - burkit-net
+
+  # db:
+  #   image: postgres:16
+  #   container_name: burkit-preapproval-db-dev
+  #   restart: always
+  #   env_file:
+  #     - ./env/.env.db
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #   networks:
+  #     - burkit-net
+
+  # redis:
+  #   image: redis:7
+  #   container_name: burkit-redis-dev
+  #   restart: always
+  #   env_file:
+  #     - ./gcb-parser/.env
+  #   command: ["sh", "-c", "redis-server --requirepass $${REDIS_PASSWORD}"]
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - burkit-net
+
+  # pgadmin:
+  #   image: dpage/pgadmin4
+  #   container_name: burkit-preapproval-pgadmin-dev
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@example.com
+  #     PGADMIN_DEFAULT_PASSWORD: adminpassword
+
+  #   ports:
+  #     - "8080:80"
+  #   depends_on:
+  #     - db
+  #   networks:
+  #     - burkit-net
+
+# volumes:
+#   pgdata:
+
+networks:
+  my-pretty-ai-net:
+    driver: bridge

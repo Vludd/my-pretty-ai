@@ -1,0 +1,79 @@
+# -------------------------
+# OS and system files
+# -------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
+
+# -------------------------
+# Backend
+# -------------------------
+**/__pycache__/
+**/*.py[cod]
+**/*.pyo
+**/*.pyd
+
+**/*.sqlite3
+**/*.egg-info/
+**/dist/
+**/build/
+**/pip-wheel-metadata/
+
+**/**/prompts/*
+!**/**/prompts/prompt.example.*
+
+# -------------------------
+# Virtual environments
+# -------------------------
+**/*.env
+**/env/
+**/venv/
+**/ENV/
+**/.venv/
+!**/*.env.example
+
+# -------------------------
+# Node / React / Vite
+# -------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+frontend/*.local
+
+# Node logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# -------------------------
+# TTS service
+# -------------------------
+tts_service/**/data/generated/*
+
+tts_service/**/data/output/*
+!tts_service/**/data/output/.gitkeep
+
+tts_service/**/data/samples/*
+!tts_service/**/data/samples/.gitkeep
+
+# -------------------------
+# IDEs
+# -------------------------
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Keep VSCode extensions.json
+!.vscode/extensions.json
+
+# -------------------------
+# Misc
+# -------------------------
+*.bak
+*.tmp
+*.swp
