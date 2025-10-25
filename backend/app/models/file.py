@@ -16,61 +16,61 @@ class MFile(Base):
         Integer,
         primary_key=True,
         index=True,
-        comment="Первичный ключ записи"
+        comment="PK"
     )
     
     storage_provider = Column(
         String(32), 
         nullable=False, 
         default="local",
-        comment="Провайдер хранилища: local, s3, ..."
+        comment="Storage Provider: local, s3, ..."
     )
     
     storage_bucket = Column(
         String(128), 
         nullable=True,
-        comment="Имя бакета/контейнера"
+        comment="Name of bucket"
     )
     
     storage_key = Column(
         TEXT, 
         nullable=False,
-        comment="Ключ/путь до файла в хранилище"
+        comment="Path to file in storage"
     )
     
     file_name = Column(
         TEXT, 
         nullable=False,
-        comment="Название файла с расширением"
+        comment="Filename"
     )
     
     mime_type = Column(
         String(128), 
         nullable=False,
-        comment="Тип-MIME"
+        comment="MIME-type"
     )
     
     size_bytes = Column(
         BIGINT, 
         nullable=False,
-        comment="Размер файла в байтах"
+        comment="File size in bytes"
     )
     
     checksum_sha256 = Column(
         TEXT, 
         nullable=False,
-        comment="Контрольная сумма файла"
+        comment="File cheksum"
     )
     
     status = Column(
         Enum(FileStatus, name="file_status", create_constraint=True),
         nullable=False,
         default=FileStatus.ACTIVE,
-        comment="Статус файла: active, deleted"
+        comment="File status: active, deleted"
     )
     
     created_at = Column(DateTime(
         timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        comment="Дата создания записи"
+        comment="Created At"
     )

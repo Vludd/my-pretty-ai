@@ -17,7 +17,7 @@ class MUser(Base):
         Integer, 
         primary_key=True, 
         index=True,
-        comment="Первичный ключ записи"
+        comment="PK"
     )
     
     public_id = Column(
@@ -26,14 +26,14 @@ class MUser(Base):
         index=True,
         nullable=False,
         default=uuid.uuid4,
-        comment="Публичный UUID пользователя"
+        comment="Public UUID of user"
     )
     
     username = Column(
         String(50),
         nullable=False,
         index=True,
-        comment="Никнейм пользователя"
+        comment="Username"
     )
     
     email = Column(
@@ -41,32 +41,32 @@ class MUser(Base):
         nullable=False,
         unique=True,
         index=True,
-        comment="Email пользователя"
+        comment="User Email"
     )
     
     password_hash = Column(
         String(255), 
         nullable=True, 
         default=None,
-        comment="Хэшированный пароль пользователя"
+        comment="User password (hashed)"
     )
     
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        comment="Дата создания записи"
+        comment="Created At"
     )
     
     updated_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
-        comment="Дата обновления записи"
+        comment="Updated At"
     )
     
     last_login_at = Column(
         DateTime(timezone=True),
         nullable=True,
         default=None,
-        comment="Дата последнего входа в систему"
+        comment="Last Login At"
     )

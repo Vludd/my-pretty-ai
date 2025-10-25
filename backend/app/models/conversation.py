@@ -18,7 +18,7 @@ class MConversation(Base):
         Integer, 
         primary_key=True, 
         index=True,
-        comment="Первичный ключ записи"
+        comment="PK"
     )
     
     public_id = Column(
@@ -27,30 +27,30 @@ class MConversation(Base):
         index=True,
         nullable=False,
         default=uuid.uuid4,
-        comment="Публичный UUID чата"
+        comment="Public UUID of conversation"
     )
     
     user_id = Column(
         ForeignKey(FK_users_id), 
         nullable=False,
-        comment=f"Внешний ключ к {FK_users_id}"
+        comment=f"FK {FK_users_id}"
     )
     
     title = Column(
         String(255), 
         nullable=False,
-        comment="Заголовок чата"
+        comment="Title of conversation"
     )
     
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        comment="Дата создания записи"
+        comment="Created At"
     )
     
     updated_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
-        comment="Дата обновления записи"
+        comment="Updated At"
     )

@@ -34,7 +34,6 @@ class LLMEngine:
             layers_order=layers_order,
             variants=layer_variants
         )
-        # system_prompt = prompt_manager.get_combined_prompt(layers_order)
         
         from datetime import datetime
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -45,7 +44,7 @@ class LLMEngine:
         self.system_prompt = system_prompt
         self.messages.append({"role": "system", "content": self.system_prompt})
 
-        # Конфигурация квантизации
+        # Quantization Configuration
         bnb_cfg = None
         if llm_config.quantization_config and llm_config.quantization_config.load_in_4bit:
             bnb_cfg = BitsAndBytesConfig(
@@ -55,7 +54,7 @@ class LLMEngine:
                 bnb_4bit_quant_type=llm_config.quantization_config.bnb_4bit_quant_type,
             )
 
-        # Загрузка модели
+        # Model Loading
         self.model = AutoModelForCausalLM.from_pretrained(
             llm_config.model_name,
             local_files_only=True,
@@ -75,10 +74,7 @@ class LLMEngine:
         layers_order: Optional[List[str]] = None,
         layer_variants: Optional[Dict[str, str]] = None
     ) -> None:
-        """
-        Обновляет системный промпт с новыми слоями/вариантами.
-        Полезно для динамического изменения личности/отношений в процессе работы.
-        """
+        """Updates the system prompt with new layers/variants."""
         prompt_manager = PromptLayerManager()
         system_prompt = prompt_manager.get_combined_prompt(
             layers_order=layers_order,
@@ -91,7 +87,6 @@ class LLMEngine:
         
         self.system_prompt = system_prompt
         
-        # Обновляем первое сообщение (system)
         if self.messages and self.messages[0]["role"] == "system":
             self.messages[0]["content"] = self.system_prompt
             logger.info("System prompt updated")

@@ -1,6 +1,8 @@
 import logging
 import colorlog
 
+from app.config import DEBUG
+
 LOG_LEVEL_COLORS = {
     "DEBUG": "cyan",
     "INFO": "green",
@@ -60,5 +62,5 @@ class Logger:
         self._logger.setLevel(level)
         
 exclude_loggers = []
-logger = Logger("DEBUG", exclude_logs=exclude_loggers)
+logger = Logger("DEBUG" if DEBUG else "INFO", exclude_logs=exclude_loggers)
         

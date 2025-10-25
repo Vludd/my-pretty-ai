@@ -29,9 +29,9 @@ class PromptLayerManager:
         for line in self.file_path.read_text(encoding="utf-8").splitlines():
             stripped = line.strip()
             
-            # Новый слой
+            # New layer
             if stripped.startswith("# Layer:"):
-                # Сохраняем предыдущий слой
+                # Saving prev layer
                 if current_layer is not None:
                     self._save_layer(current_layer, layer_content, variants)
                 
@@ -41,14 +41,14 @@ class PromptLayerManager:
                 variants = {}
                 current_variant = None
             
-            # Вариант внутри слоя (например, @tsundere:)
+            # Variant in layer (example, @tsundere:)
             elif stripped.startswith("@") and ":" in stripped and current_layer:
-                # Сохраняем предыдущий вариант
+                # Saving prev variant
                 if current_variant is not None:
                     variants[current_variant] = "\n".join(layer_content).strip()
                     layer_content = []
                 
-                # Извлекаем название варианта (между @ и :)
+                # Export variant name (between @ and :)
                 current_variant = stripped[1:].split(":", 1)[0].strip()
                 
                 logger.debug(f"  Reading variant: '{current_variant}'")
@@ -56,13 +56,13 @@ class PromptLayerManager:
             else:
                 layer_content.append(line)
         
-        # Сохраняем последний слой
+        # Saving last layer
         if current_layer is not None:
             self._save_layer(current_layer, layer_content, variants)
 
     def _save_layer(self, layer_name: str, content: List[str], variants: Dict[str, str]):
-        """Сохраняет слой с его вариантами"""
-        # Если есть варианты, сохраняем последний
+        """Saves the layer with its variants"""
+        # If variants exists then saving last
         if variants:
             if content:
                 last_variant = list(variants.keys())[-1] if variants else None
@@ -75,7 +75,7 @@ class PromptLayerManager:
             }
             logger.debug(f"Saved layer '{layer_name}' with {len(variants)} variants: {list(variants.keys())}")
         else:
-            # Обычный слой без вариантов
+            # Default layer without variants
             self.layers[layer_name] = {
                 "type": "simple",
                 "content": "\n".join(content).strip()
@@ -88,11 +88,11 @@ class PromptLayerManager:
         variants: Optional[Dict[str, str]] = None
     ) -> str:
         """
-        Собирает промпт из указанных слоёв и вариантов.
+        Collects the prompt from the specified layers and variants.
         
         Args:
-            layers_order: список слоёв в нужном порядке. Если None, берутся все.
-            variants: словарь {layer_name: variant_name} для выбора конкретных вариантов
+            layers_order: list of layers in the desired order. If None, all are taken.
+            variants: {layer_name: variant_name} dictionary for selecting specific variants
         
         Example:
             get_combined_prompt(
@@ -119,12 +119,12 @@ class PromptLayerManager:
             layer_data = self.layers[layer]
             
             if layer_data["type"] == "simple":
-                # Простой слой
+                # Simple layer
                 parts.append(f"# Layer: {layer}")
                 parts.append(layer_data["content"])
             
             elif layer_data["type"] == "variants":
-                # Слой с вариантами
+                # Layer with variants
                 variant_name = variants.get(layer)
                 
                 if variant_name:
@@ -139,7 +139,7 @@ class PromptLayerManager:
                             f"Available: {available}"
                         )
                 else:
-                    # Если вариант не указан, берём все варианты
+                    # If the option is not specified, we take all the variants
                     parts.append(f"# Layer: {layer}")
                     for var_name, var_content in layer_data["variants"].items():
                         parts.append(f"\n@{var_name}:")
@@ -155,11 +155,11 @@ class PromptLayerManager:
         return combined_prompt
 
     def get_available_layers(self) -> List[str]:
-        """Возвращает список доступных слоёв"""
+        """Returns a list of available layers"""
         return list(self.layers.keys())
 
     def get_layer_variants(self, layer_name: str) -> Optional[List[str]]:
-        """Возвращает список вариантов для слоя, если они есть"""
+        """Returns a list of options for the layer, if any"""
         if layer_name not in self.layers:
             return None
         
@@ -170,7 +170,7 @@ class PromptLayerManager:
         return None
 
     def get_layer_info(self) -> Dict[str, Any]:
-        """Возвращает информацию о всех слоях"""
+        """Returns information about all layers"""
         info = {}
         for layer_name, layer_data in self.layers.items():
             if layer_data["type"] == "simple":

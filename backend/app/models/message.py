@@ -19,7 +19,7 @@ class MMessage(Base):
         Integer, 
         primary_key=True, 
         index=True,
-        comment="Первичный ключ записи"
+        comment="PK"
     )
     
     public_id = Column(
@@ -28,37 +28,37 @@ class MMessage(Base):
         index=True,
         nullable=False,
         default=uuid.uuid4,
-        comment="Публичный UUID сообщения"
+        comment="Public UUID of message"
     )
     
     conversation_id = Column(
         ForeignKey(FK_conversations_id), 
         nullable=False,
-        comment=f"Внешний ключ к {FK_conversations_id}"
+        comment=f"FK {FK_conversations_id}"
     )
     
     sender_type = Column(
         Enum(SenderType, name="message_sender_type", create_constraint=True),
         nullable=False,
         default=SenderType.USER,
-        comment="Назначение файла: user, ai"
+        comment="Sender: user, ai"
     )
     
     content = Column(
         TEXT, 
         nullable=False,
-        comment="Текст сообщения"
+        comment="Text of message"
     )
     
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        comment="Дата создания записи"
+        comment="Created At"
     )
     
     updated_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
-        comment="Дата обновления записи"
+        comment="Updated At"
     )

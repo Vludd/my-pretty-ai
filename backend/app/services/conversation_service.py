@@ -1,8 +1,7 @@
 from uuid import UUID
 from fastapi.exceptions import HTTPException
-from app.dependencies import LLM, UserRepo, ConversationRepo, MessageRepo
+from app.dependencies import UserRepo, ConversationRepo, MessageRepo
 from app.schemas.conversation import SConversationCreate
-from app.types.messages import SenderType
 from app.utils.logger import logger
 
 class ChatService:

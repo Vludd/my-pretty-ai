@@ -16,47 +16,47 @@ class MLLMLog(Base):
         Integer, 
         primary_key=True, 
         index=True,
-        comment="Первичный ключ записи"
+        comment="PK"
     )
     
     conversation_id = Column(
         ForeignKey(FK_conversations_id), 
         nullable=False,
-        comment=f"Внешний ключ к {FK_conversations_id}"
+        comment=f"FK {FK_conversations_id}"
     )
     
     prompt = Column(
         TEXT,
         nullable=False,
-        comment="Текст промпта"
+        comment="Prompt text"
     )
     
     response = Column(
         TEXT, 
         nullable=True,
-        comment="Ответ на промпт"
+        comment="Response"
     )
     
     input_tokens = Column(
         Integer,
         nullable=True,
-        comment="Входящие токены"
+        comment="Input tokens"
     )
     
     output_tokens = Column(
         Integer,
         nullable=True,
-        comment="Исходящие токены"
+        comment="Output tokens"
     )
     
     total_tokens = Column(
         Integer,
         nullable=True,
-        comment="Потраченные токены на весь запрос"
+        comment="Spent tokens for the entire request"
     )
     
     created_at = Column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
-        comment="Дата создания записи"
+        comment="Created At"
     )
