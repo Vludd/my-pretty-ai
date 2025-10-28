@@ -85,7 +85,8 @@ class PromptLayerManager:
     def get_combined_prompt(
         self, 
         layers_order: Optional[List[str]] = None,
-        variants: Optional[Dict[str, str]] = None
+        variants: Optional[Dict[str, str]] = None,
+        randomized_variant: bool = False            # In Dev
     ) -> str:
         """
         Collects the prompt from the specified layers and variants.

@@ -58,9 +58,6 @@ class Logger:
     def critical(self, message="Test critical log..."):
         self._logger.critical(message)
         
-    def exception(self, message="Test exception log..."):
-        self._logger.exception(message)
-        
     def set_level(self, level="INFO"):
         self._logger.setLevel(level)
         

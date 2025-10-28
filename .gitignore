@@ -68,6 +68,8 @@ tts_service/**/data/samples/*
 *.sublime-project
 *.sublime-workspace
 
+**/*.code-workspace
+
 # Keep VSCode extensions.json
 !.vscode/extensions.json
 

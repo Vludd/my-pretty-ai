@@ -6,18 +6,15 @@ from app.repositories import UserRepository, ConversationRepository, MessageRepo
 
 from app.database import get_db
 
-from app.data.configs.llm_config_schema import SLLMConfig
-from app.core.ai_engine import LLMEngine
-
-llm_config = SLLMConfig()
-LLM = LLMEngine(
-    llm_config, 
-    layers_order=["system", "about", "rules", "safety", "personality", "relationship", "context", "time_context", "erotic"],
-    layer_variants={
-        "personality": "sadodere",
-        "relationship": "friend"
-    }
-)
+LLM_URL = "http://localhost:8001"
+# LLM = LLMEngine(
+#     llm_config, 
+#     layers_order=["system", "about", "rules", "safety", "personality", "relationship", "context", "time_context", "erotic"],
+#     layer_variants={
+#         "personality": "sadodere",
+#         "relationship": "friend"
+#     }
+# )
 
 DBSessionDep = Annotated[AsyncSession, Depends(get_db)]
 

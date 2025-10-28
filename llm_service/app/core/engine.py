@@ -2,13 +2,14 @@ from typing import Dict, List, Optional
 from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 
 import torch
-from pathlib import Path
 
 from app.data.configs.llm_config_schema import SLLMConfig
-from app.schemas.llm import SContextMessage
+from app.schemas.context import SContextMessage
 from app.core.prompt_manager import PromptLayerManager
 
 from app.utils.logger import logger
+
+prompt_manager = PromptLayerManager()
 
 class LLMEngine:
     def __init__(
@@ -19,82 +20,86 @@ class LLMEngine:
     ) -> None:
         self.llm_config = llm_config
         self.messages: List[Dict[str, str]] = []
+        self.system_prompt = ""
         
+        self._load_model(self.llm_config.model_name)
+        self.load_system_prompt(layers_order, layer_variants, True)
+    
+    def _load_model(self, model_name: str = ""):
         logger.info("Initializaion LLMEngine...")
+
+        # Quantization Configuration
+        bnb_cfg = None
+        if self.llm_config.quantization_config and self.llm_config.quantization_config.load_in_4bit:
+            bnb_cfg = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=self.llm_config.quantization_config.bnb_4bit_compute_dtype,
+                bnb_4bit_use_double_quant=self.llm_config.quantization_config.bnb_4bit_use_double_quant,
+                bnb_4bit_quant_type=self.llm_config.quantization_config.bnb_4bit_quant_type,
+            )
+
+        # Model Loading
+        self.model = AutoModelForCausalLM.from_pretrained(
+            model_name,
+            local_files_only=True,
+            quantization_config=bnb_cfg,
+            device_map=self.llm_config.device_map,
+            max_memory=self.llm_config.max_memory,
+            dtype=self.llm_config.dtype,
+            low_cpu_mem_usage=self.llm_config.low_cpu_mem_usage,
+        )
         
+        self.tokenizer = AutoTokenizer.from_pretrained(self.llm_config.model_name)
+        if self.tokenizer.pad_token is None:
+            self.tokenizer.pad_token = self.tokenizer.eos_token
+    
+    def load_system_prompt(
+        self,
+        layers_order: Optional[List[str]] = None,
+        layer_variants: Optional[Dict[str, str]] = None,
+        initial_load: bool = False
+    ) -> None:
+        """(Re)loads the system prompt with optional layer configuration.
+
+        Args:
+            layers_order (Optional[List[str]]): The order of layers to use.
+            layer_variants (Optional[Dict[str, str]]): The layer variants.
+            initial_load (bool): Whether this is the first system prompt load.
+        """
+        from datetime import datetime
         prompt_manager = PromptLayerManager()
-        
+
+        # Отладка доступных слоев и вариантов
         layer_info = prompt_manager.get_layer_info()
         logger.debug(f"Available layers: {list(layer_info.keys())}")
         for layer_name, info in layer_info.items():
             if info["type"] == "variants":
                 logger.debug(f"  {layer_name}: {info['variants']}")
-                
+
+        # Формирование комбинированного системного промпта
         system_prompt = prompt_manager.get_combined_prompt(
             layers_order=layers_order,
             variants=layer_variants
         )
-        
-        from datetime import datetime
+
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        system_prompt += f"\n\nCurrent time: {current_time}"
-        
         logger.debug(f"Datetime now: {current_time}")
 
-        self.system_prompt = system_prompt
-        self.messages.append({"role": "system", "content": self.system_prompt})
-
-        # Quantization Configuration
-        bnb_cfg = None
-        if llm_config.quantization_config and llm_config.quantization_config.load_in_4bit:
-            bnb_cfg = BitsAndBytesConfig(
-                load_in_4bit=True,
-                bnb_4bit_compute_dtype=llm_config.quantization_config.bnb_4bit_compute_dtype,
-                bnb_4bit_use_double_quant=llm_config.quantization_config.bnb_4bit_use_double_quant,
-                bnb_4bit_quant_type=llm_config.quantization_config.bnb_4bit_quant_type,
-            )
-
-        # Model Loading
-        self.model = AutoModelForCausalLM.from_pretrained(
-            llm_config.model_name,
-            local_files_only=True,
-            quantization_config=bnb_cfg,
-            device_map=llm_config.device_map,
-            max_memory=llm_config.max_memory,
-            dtype=llm_config.dtype,
-            low_cpu_mem_usage=llm_config.low_cpu_mem_usage,
-        )
-        
-        self.tokenizer = AutoTokenizer.from_pretrained(llm_config.model_name)
-        if self.tokenizer.pad_token is None:
-            self.tokenizer.pad_token = self.tokenizer.eos_token
-    
-    def update_system_prompt(
-        self,
-        layers_order: Optional[List[str]] = None,
-        layer_variants: Optional[Dict[str, str]] = None
-    ) -> None:
-        """Updates the system prompt with new layers/variants."""
-        prompt_manager = PromptLayerManager()
-        system_prompt = prompt_manager.get_combined_prompt(
-            layers_order=layers_order,
-            variants=layer_variants
-        )
-        
-        from datetime import datetime
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         system_prompt += f"\n\nCurrent time: {current_time}"
-        
         self.system_prompt = system_prompt
-        
+
+        # Обновление или добавление в список сообщений
         if self.messages and self.messages[0]["role"] == "system":
             self.messages[0]["content"] = self.system_prompt
             logger.info("System prompt updated")
         else:
             self.messages.insert(0, {"role": "system", "content": self.system_prompt})
             logger.info("System prompt added")
+
+        if initial_load:
+            logger.info("System prompt initialized")
     
-    async def load_conversation(self, context: list[SContextMessage]):
+    def load_conversation(self, context: List[SContextMessage]):
         self.messages = [{"role": "system", "content": self.system_prompt}]
         
         logger.debug(f"Loading context... {len(context)} messages")
@@ -103,7 +108,7 @@ class LLMEngine:
             self.messages.append(context_item)
             logger.debug(f"Loaded: {context_item}")
             
-    async def generate(self, text: str):
+    def generate(self, text: str):
         self.messages.append({"role": "user", "content": text})
 
         prompt = self.tokenizer.apply_chat_template(
