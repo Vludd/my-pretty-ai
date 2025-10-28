@@ -3,9 +3,9 @@ import os
 
 load_dotenv()
 
-APP_NAME = os.getenv("APP_NAME", "FastAPI Project")
+APP_NAME = os.getenv("APP_NAME", "MyPrettyAI")
 APP_HOST = os.getenv("APP_HOST", "localhost")
-APP_PORT = os.getenv("APP_PORT", "8000")
+APP_PORT = int(os.getenv("APP_PORT", 8000)) 
 DEBUG: bool = os.getenv("DEBUG", "False").lower() == "true"
 
 DB_HOST = os.getenv("DB_HOST", "localhost")

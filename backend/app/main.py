@@ -1,5 +1,3 @@
-import uvicorn
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
@@ -15,7 +13,10 @@ async def lifespan(app: FastAPI):
     # --- shutdown ---
     pass
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    lifespan=lifespan,
+    version="0.1.2"
+)
 
 app.add_middleware(
     CORSMiddleware,
