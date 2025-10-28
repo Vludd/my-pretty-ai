@@ -1,9 +1,8 @@
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
-from app.dependencies import tts, EmotionType
+import app.config as cfg
 
 from app.routes import api_router
 
@@ -15,7 +14,11 @@ async def lifespan(app: FastAPI):
     # >
     # --- shutdown ---
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    title=cfg.APP_NAME,
+    lifespan=lifespan,
+    version="0.1.1"
+)
 
 app.add_middleware(
     CORSMiddleware,

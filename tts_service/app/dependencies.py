@@ -1,8 +1,9 @@
 from enum import Enum
 from app.core.tts_engine import TTSEngine
 
-MODEL_NAME = "tts_models/multilingual/multi-dataset/xtts_v2"
-tts = TTSEngine(MODEL_NAME, use_cuda=False)
+from app.config import TTS_MODEL, TTS_USE_CUDA
+
+tts = TTSEngine(TTS_MODEL, use_cuda=TTS_USE_CUDA)
 
 class EmotionType(str, Enum):
     Neutral = "neutral"
