@@ -60,6 +60,8 @@ tts_service/**/data/output/*
 tts_service/**/data/samples/*
 !tts_service/**/data/samples/.gitkeep
 
+tts_service/**/cache/*
+
 # -------------------------
 # IDEs
 # -------------------------
