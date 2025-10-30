@@ -7,6 +7,9 @@ from app.repositories import UserRepository, ConversationRepository, MessageRepo
 from app.database import get_db
 
 LLM_URL = "http://localhost:8001"
+TTS_URL = "http://localhost:8002"
+STT_URL = "http://localhost:8003"
+
 # LLM = LLMEngine(
 #     llm_config, 
 #     layers_order=["system", "about", "rules", "safety", "personality", "relationship", "context", "time_context", "erotic"],
