@@ -17,7 +17,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title=cfg.APP_NAME,
     lifespan=lifespan,
-    version="0.1.1"
+    version="0.1.2"
 )
 
 app.add_middleware(
@@ -28,4 +28,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(api_router)
+@app.get("/")
+def root():
+    return {"detail": "TTS Service is available!"}
+
+app.include_router(api_router, prefix="/tts")
