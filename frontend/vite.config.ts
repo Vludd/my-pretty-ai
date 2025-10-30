@@ -4,7 +4,6 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { version } from "./package.json";
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   resolve: {
@@ -13,9 +12,14 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: [
+      "myprettyai.local" // DEV
+    ],
     proxy: {
       "/api": "http://localhost:8000",
-      "/tts": "http://localhost:8100"
+      "/llm": "http://localhost:8001",
+      "/tts": "http://localhost:8002",
+      "/stt": "http://localhost:8003"
     },
   },
   define: {
