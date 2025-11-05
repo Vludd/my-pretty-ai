@@ -2,14 +2,18 @@ import httpx
 
 from uuid import UUID
 from typing import List, Sequence
+from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.exceptions import HTTPException
 
-from app.dependencies import UserRepo, ConversationRepo, MessageRepo, LLM_URL
+from app.config import LLM_URL
 from app.schemas.message import SMessageCreate
 from app.types.messages import SenderType
 from app.utils.logger import logger
 
 class TTSService:
+    def __init__(self, db_session: AsyncSession):
+        self.db = db_session
+        
     async def get_models(self):
         async with httpx.AsyncClient(timeout=60.0) as client:
             try:

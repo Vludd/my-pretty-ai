@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 
 from app.routes import api_router
 from app.database import init_db
+from app.core.exception_handlers import setup_exception_handlers
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -15,8 +16,10 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
-    version="0.1.2"
+    version="0.2.1"
 )
+
+setup_exception_handlers(app)
 
 app.add_middleware(
     CORSMiddleware,

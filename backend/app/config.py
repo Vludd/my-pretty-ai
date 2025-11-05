@@ -3,6 +3,10 @@ import os
 
 load_dotenv()
 
+LLM_URL = "http://localhost:8001"
+TTS_URL = "http://localhost:8002"
+STT_URL = "http://localhost:8003"
+
 APP_NAME = os.getenv("APP_NAME", "MyPrettyAI")
 APP_HOST = os.getenv("APP_HOST", "localhost")
 APP_PORT = int(os.getenv("APP_PORT", 8000)) 
