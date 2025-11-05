@@ -30,7 +30,7 @@ export async function loadContext(userId: string, conversationId: string) {
 export async function loadConversation(userId: string, conversationId: string): Promise<Message[]> {
   await loadContext(userId, conversationId);
 
-  const response = await fetch(`/api/v1/conversations/${conversationId}/messages?user_id=${userId}`, {
+  const response = await fetch(`/api/v1/conversations/messages?user_id=${userId}&conversation_id=${conversationId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
