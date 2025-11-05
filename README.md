@@ -1,10 +1,24 @@
-# MyPrettyAI
+<h1 align="center">MyPrettyAI</h1>
+<h3 align="center">Your digital friend who works locally and offline</h3>
 
-**MyPrettyAI** — is an offline AI service that allows you to interact with a powerful LLM, recognize speech and voice text using TTS. The project is completely autonomous and does not require an Internet connection for basic functionality.
+<p align="left">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
+  <img src="https://img.shields.io/badge/SQLAlchemy-cc0000?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white" />
+  <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" />
+  <img src="https://img.shields.io/badge/Microservices-FF6F00?style=for-the-badge&logo=google-cloud&logoColor=white" />
+  <img src="https://img.shields.io/badge/LLM-AI%20Model-6E5494?style=for-the-badge&logo=openai&logoColor=white" />
+  <img src="https://img.shields.io/badge/AsyncIO-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+</p>
+
+## ▸｜About MyPrettyAI
+It's an offline AI service that allows you to interact with a powerful LLM, recognize speech and voice text using TTS. The project is completely autonomous and does not require an Internet connection for basic functionality.
 
 ---
 
-## Basic features
+## ▸｜Basic features
 
 - **Offline LLM**: support for local models for text generation and communication. (So far only LLM Qwen3/4B)
 - **Speech recognition (STT)**: Converting voice commands into text. (IN DEV)
@@ -20,9 +34,30 @@
 
 ---
 
-## Installation
+## ▸｜System Requirements
 
-### Attention! The developer does not guarantee the stable operation of all microservices without meeting the minimum system requirements
+| Component | Minimum | Recommended |
+|------------|----------|-------------|
+| **CPU** | 4-core processor (AMD Ryzen 3 / Intel i5 8th gen or newer) | 8-core or more (AMD Ryzen 7 / Intel i7) |
+| **RAM** | 8 GB | 16–32 GB (for smooth LLM, TTS/STT processing) |
+| **Storage** | 10 GB free space (models, cache, logs) | 20 GB free space (large models, cache, logs) |
+| **GPU** | Optional (CPU mode supported, but slower) | NVIDIA RTX 3060 / RX 6600 or better (≥ 6 GB VRAM, CUDA 12+) |
+| **OS** | Windows 10/11, Linux (tested on Arch Linux) | Windows 10/11, Linux (x86_64, CUDA 12+ supported) |
+
+### Dependencies
+*(No need to install this locally when deploying project via Docker!)*
+
+- **Python:** 3.11 or higher
+- **Node.js:** 22 or higher (for frontend)
+- **ffmpeg:** required for TTS/STT audio processing
+- **Redis:** used for caching and job queues
+- **Docker:** recommended for containerized deployment
+
+<h4 align="center" style="color:tomato;">⚠️ Stable operation is not guaranteed below the minimum requirements.</h4>
+
+---
+
+## ▸｜Installation Locally
 
 1. Clone the repository:
 ```bash
@@ -74,7 +109,7 @@ npm install                 # or pnpm install
 
 ---
 
-## RUN:
+## ▸｜Run:
 
 1. LLM Service:
 ```bash
@@ -108,7 +143,7 @@ npm run dev                 # Start on 5173 port by default
 
 ---
 
-## Project Outline
+## ▸｜Project Outline
 ```bash
 .
 ├── backend/                # API Core
@@ -125,12 +160,12 @@ npm run dev                 # Start on 5173 port by default
 
 ---
 
-## License
+## ▸｜License
 The project is distributed under the mit License. For more information, see the LICENSE file.
 
 ---
 
-## Planned features:
+## ▸｜Planned features:
 ```bash
 - Voice chat mode
 - Setting and running services with Docker-compose
