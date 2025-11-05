@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Mic, Plus, SendHorizontalIcon } from "lucide-react";
 import { useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 interface FooterProps {
   userId: string;
@@ -28,7 +29,7 @@ export const Footer = ({ userId, conversationId, setMessages }: FooterProps) => 
     if (!trimmed) return;
 
     const userMessage: Message = {
-      public_id: crypto.randomUUID(),
+      public_id: uuidv4(),
       sender_type: "user",
       content: trimmed,
       created_at: new Date().toISOString(),
@@ -36,14 +37,14 @@ export const Footer = ({ userId, conversationId, setMessages }: FooterProps) => 
     };
 
     setMessages((prev) => [...prev, userMessage]);
-    setText(""); // ✅ очищаем состояние
+    setText("");
     if (textareaRef.current) textareaRef.current.value = "";
 
     try {
       const res = await sendMessage(userId, conversationId, trimmed);
 
       const aiMessage: Message = {
-        public_id: crypto.randomUUID(),
+        public_id: uuidv4(),
         sender_type: "ai",
         content: res.reply,
         created_at: new Date().toISOString(),

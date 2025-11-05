@@ -63,4 +63,3 @@ class Logger:
         
 exclude_loggers = []
 logger = Logger("DEBUG" if DEBUG else "INFO", exclude_logs=exclude_loggers)
-        
