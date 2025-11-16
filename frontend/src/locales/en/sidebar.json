@@ -1,0 +1,14 @@
+{
+    "ai_group": "",
+    "ai_chat": "AI Chat",
+
+    "general_group": "General",
+    "dashboard": "Dashboard",
+    
+    "system_group": "System",
+    "settings": "Settings",
+    
+    "account": "Account",
+    "sign_in": "Sign In",
+    "sign_out": "Sign Out"
+}

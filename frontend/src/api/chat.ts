@@ -1,3 +1,4 @@
+import type { Chat } from "@/types/Chat";
 
 export interface Message {
   public_id: string;
@@ -7,14 +8,45 @@ export interface Message {
   updated_at: string;
 }
 
-export async function getConversation(user_id: string) {
-  const response = await fetch(`/api/v1/conversations?user_id=${user_id}`, {
+export async function getConversations(userId: string): Promise<Chat[]> {
+  const response = await fetch(`/api/v1/conversations?user_id=${userId}`, {
     method: "GET",
     headers: { "Content-Type": "application/json" },
   });
 
   if (!response.ok) throw new Error("Failed to fetch conversations");
-  return response.json() as Promise<{ messages: string }>;
+
+  const raw = await response.json();
+
+  const chats: Chat[] = raw.map((item: any) => ({
+    id: item.public_id,
+    title: item.title,
+    lastMessage: item.last_message || "",
+    updatedAt: item.updated_at,
+  }));
+
+  return chats;
+}
+
+export async function getLastMessage(userId: string, conversationId: string): Promise<Message> {
+  const response = await fetch(`/api/v1/conversations/messages/last?user_id=${userId}&conversation_id=${conversationId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+  
+  if (!response.ok) throw new Error("Failed to fetch last message");
+
+  const raw = await response.json();
+
+  const lastMessage: Message = {
+    public_id: raw.public_id,
+    sender_type: raw.title,
+    content: raw.content,
+    created_at: raw.created_at,
+    updated_at: raw.updated_at
+  };
+
+  return lastMessage;
 }
 
 export async function loadContext(userId: string, conversationId: string) {
@@ -27,8 +59,8 @@ export async function loadContext(userId: string, conversationId: string) {
   return response.json() as Promise<{ response: string }>;
 }
 
-export async function loadConversation(userId: string, conversationId: string): Promise<Message[]> {
-  await loadContext(userId, conversationId);
+export async function loadConversation(userId: string, conversationId?: string): Promise<Message[]> {
+  if (conversationId) await loadContext(userId, conversationId);
 
   const response = await fetch(`/api/v1/conversations/messages?user_id=${userId}&conversation_id=${conversationId}`, {
     method: "GET",

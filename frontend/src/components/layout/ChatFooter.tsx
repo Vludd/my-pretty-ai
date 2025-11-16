@@ -7,11 +7,11 @@ import { v4 as uuidv4 } from "uuid";
 
 interface FooterProps {
   userId: string;
-  conversationId: string;
+  conversationId?: string;
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
-export const Footer = ({ userId, conversationId, setMessages }: FooterProps) => {
+export const ChatFooter = ({ userId, conversationId, setMessages }: FooterProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [text, setText] = useState("");
 
@@ -41,6 +41,7 @@ export const Footer = ({ userId, conversationId, setMessages }: FooterProps) => 
     if (textareaRef.current) textareaRef.current.value = "";
 
     try {
+      if (!conversationId) throw new Error("Conversation ID is required to send a message");
       const res = await sendMessage(userId, conversationId, trimmed);
 
       const aiMessage: Message = {
@@ -95,7 +96,7 @@ export const Footer = ({ userId, conversationId, setMessages }: FooterProps) => 
         </Button>
       </div>
       <p className="text-muted-foreground text-xs text-center mt-2">
-        MyPrettyAI v{__APP_VERSION__}
+        Vludd.exe &copy; 2025. All rights reserved.
       </p>
     </footer>
   );

@@ -57,7 +57,7 @@ export const MessageActions = ({ text, isUser }: { text: string, isUser?: boolea
   return (
     <div
       className={`absolute bottom-1 flex gap-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity 
-      ${isUser ? "right-0 translate-x-full pr-2" : "left-0 -translate-x-full pl-2"}`}
+      ${isUser ? "left-0 -translate-x-full pr-2" : "right-0 translate-x-full pl-2"}`}
     >
       <Button size="icon" variant="ghost" className="h-7 w-7">
         <Reply className="h-4 w-4" />

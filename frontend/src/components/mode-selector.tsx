@@ -1,4 +1,4 @@
-import { Moon, Sun } from "lucide-react"
+import { ChevronDown, Moon, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -9,19 +9,27 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useTheme } from "@/components/theme-provider"
 
-export function ModeToggle() {
-  const { setTheme } = useTheme()
+export function ModeSelector() {
+  const { setTheme, theme } = useTheme()
+
+  const currentLabel =
+    theme === "light" ? "Light" :
+    theme === "dark" ? "Dark" :
+    "System"
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="icon">
-          <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-          <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-          <span className="sr-only">Toggle theme</span>
+        <Button
+          variant="outline"
+          className="justify-between"
+        >
+          <span>{currentLabel}</span>
+          <ChevronDown className="h-4 w-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+
+      <DropdownMenuContent className="w-40">
         <DropdownMenuItem onClick={() => setTheme("light")}>
           Light
         </DropdownMenuItem>

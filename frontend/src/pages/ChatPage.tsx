@@ -1,15 +1,25 @@
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { useEffect, useRef, useState } from "react";
 import { loadConversation, type Message } from "@/api/chat";
-import { Footer } from "@/components/layout/Footer";
-import { Header } from "@/components/layout/Header";
+import { ChatFooter } from "@/components/layout/ChatFooter";
+import { ChatHeader } from "@/components/layout/ChatHeader";
+import ModelSelector from "@/components/ModelSelector";
+import type { AIModel } from "@/types/AiModel";
+import { Link, useParams } from "react-router-dom";
+import { useUser } from "@/context/useUser";
+import { formatTime } from "@/utils/formatTime";
 
-interface ChatPageProps {
-  conversationId: string;
-  userId: string;
-}
+const models: AIModel[] = [
+  { title: "Qwen3-4B", modelName: "Qwen3-4B model", downloaded: true },
+  { title: "Llama2-7B", modelName: "Llama2-7B model", downloaded: false },
+  { title: "GPT-4-All", modelName: "GPT-4-All model", downloaded: true },
+];
 
-export default function ChatPage({ userId, conversationId }: ChatPageProps) {
+export default function ChatPage() {
+  const { userId } = useUser();
+
+  const { conversationId } = useParams();
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -29,12 +39,19 @@ export default function ChatPage({ userId, conversationId }: ChatPageProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (loading) return <div className="p-4 text-center">Загрузка...</div>;
+  if (loading) return <div className="p-4 text-center">Loading...</div>;
 
   return (
-      <div className="flex flex-col h-screen">
-        <Header />
+    
+    <div className="flex h-screen overflow-hidden">
+      <div className="flex flex-col flex-1">
+        <ChatHeader>
+          <ModelSelector models={models} />
+        </ChatHeader>
         <main className="flex-1 p-4 overflow-y-auto">
+          <Link to="/dashboard" className="fixed text-sm text-muted-foreground mb-4 inline-block">
+            &larr; Back to AI Menu
+          </Link>
           <div className="max-w-3xl mx-auto space-y-4">
             {messages.map((msg) => (
               <ChatMessage
@@ -44,18 +61,11 @@ export default function ChatPage({ userId, conversationId }: ChatPageProps) {
                 isUser={msg.sender_type === "user"}
               />
             ))}
+            <div ref={bottomRef} />
           </div>
-        <div ref={bottomRef} />
         </main>
-        <Footer userId={userId} conversationId={conversationId} setMessages={setMessages} />
+        <ChatFooter userId={userId} conversationId={conversationId} setMessages={setMessages} />
       </div>
+    </div>
   );
-}
-
-// Вспомогательная функция: "2025-10-23T23:43:09.711555Z" → "11:43 PM"
-function formatTime(iso: string) {
-  return new Date(iso).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 }
