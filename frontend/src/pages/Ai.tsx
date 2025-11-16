@@ -1,6 +1,7 @@
 import { getConversations as getConversations, getLastMessage } from "@/api/chat";
 import AIChatList from "@/components/ai/ChatList";
 import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useUser } from "@/context/useUser";
 import type { Chat } from "@/types/Chat";
@@ -133,7 +134,12 @@ export default function AIPage() {
           </Button>
         </div>
       </div>
-      <AIChatList chats={chats}/>
+      <div className="flex flex-col items-center p-2">
+        {loading 
+          ? <Spinner /> 
+          : <AIChatList chats={chats} /> 
+        }
+      </div>
     </div>
   );
 }

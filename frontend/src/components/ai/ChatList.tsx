@@ -25,7 +25,7 @@ export default function AIChatList({ chats }: Props) {
                   <p className="font-medium truncate">{chat.title}</p>
                   <p className="text-xs text-muted-foreground truncate">{chat.lastMessage || ""}</p>
                 </div>
-                <ChevronRight className="flex-shrink-0" />
+                <ChevronRight className="size-4 flex-shrink-0" />
               </div>
             </Link>
           </div>

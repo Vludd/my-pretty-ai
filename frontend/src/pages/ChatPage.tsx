@@ -46,12 +46,15 @@ export default function ChatPage() {
     <div className="flex h-screen overflow-hidden">
       <div className="flex flex-col flex-1">
         <ChatHeader>
-          <ModelSelector models={models} />
+          <div className="flex items-center justify-between w-full">
+            <Link to="/dashboard" className="text-sm text-muted-foreground ">
+              &larr; Back to AI Menu
+            </Link>
+            
+            <ModelSelector models={models} />
+          </div>
         </ChatHeader>
         <main className="flex-1 p-4 overflow-y-auto">
-          <Link to="/dashboard" className="fixed text-sm text-muted-foreground mb-4 inline-block">
-            &larr; Back to AI Menu
-          </Link>
           <div className="max-w-3xl mx-auto space-y-4">
             {messages.map((msg) => (
               <ChatMessage
