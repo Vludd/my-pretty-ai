@@ -44,6 +44,18 @@ class ConversationService:
         messages = await self.message_repo.get_all_by_conversation(exists_conversation.id) # type: ignore
         return messages
     
+    async def get_conversation_last_message(self, user_id: UUID, conversation_id: UUID):
+        exists_user = await self.user_repo.get_by_public_id(user_id)
+        if not exists_user:
+            raise ex.NotFoundException("User is not found!", log_level="warning")
+        
+        exists_conversation = await self.conversation_repo.get_by_public_id(conversation_id)
+        if not exists_conversation:
+            raise ex.NotFoundException("Conversation is not found!", log_level="warning")
+        
+        last_message = await self.message_repo.get_latest_by_conversation(exists_conversation.id) # type: ignore
+        return last_message
+    
     async def get_conversations(self, user_id: UUID):
         exists_user = await self.user_repo.get_by_public_id(user_id)
         if not exists_user:

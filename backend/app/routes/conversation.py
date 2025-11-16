@@ -13,6 +13,11 @@ async def get_conversations(user_id: UUID, service: ConversationServiceDep):
     response = await service.get_conversations(user_id)
     return response
 
+@router.get("/messages/last")
+async def get_last_message(user_id: UUID, conversation_id: UUID, service: ConversationServiceDep):
+    response = await service.get_conversation_last_message(user_id, conversation_id)
+    return response
+
 @router.get("/messages")
 async def get_messages(user_id: UUID, conversation_id: UUID, service: ConversationServiceDep):
     messages: Sequence[MMessage] = await service.get_conversation_messages(user_id, conversation_id)
