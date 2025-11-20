@@ -1,5 +1,5 @@
 import './App.css'
-import AppLayout from './components/layout/AppLayout'
+import AppLayout from '@/components/layout/AppLayout'
 
 import { ThemeProvider } from "@/components/theme-provider"
 

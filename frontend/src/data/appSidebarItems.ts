@@ -1,7 +1,7 @@
-import type { SidebarGroup } from "@/types/SidebarGroup";
+import type { NavGroup } from "@/types/NavGroup";
 import { ChartPie, Settings, Wand2 } from "lucide-react";
 
-export const sidebarItems: SidebarGroup[] = [
+export const navGroups: NavGroup[] = [
   {
     name: "",
     items: [

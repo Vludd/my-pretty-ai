@@ -1,13 +1,17 @@
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { useEffect, useRef, useState } from "react";
-import { loadConversation, type Message } from "@/api/chat";
-import { ChatFooter } from "@/components/layout/ChatFooter";
-import { ChatHeader } from "@/components/layout/ChatHeader";
+import { getConversationMessages, type Message } from "@/api/chat";
+import { ChatInput } from "@/components/chat/ChatInput";
 import ModelSelector from "@/components/ModelSelector";
 import type { AIModel } from "@/types/AiModel";
 import { Link, useParams } from "react-router-dom";
 import { useUser } from "@/context/useUser";
 import { formatTime } from "@/utils/formatTime";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { ChevronLeft } from "lucide-react";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { Spinner } from "@/components/ui/spinner";
 
 const models: AIModel[] = [
   { title: "Qwen3-4B", modelName: "Qwen3-4B model", downloaded: true },
@@ -25,7 +29,7 @@ export default function ChatPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadConversation(userId, conversationId)
+    getConversationMessages(userId, conversationId)
       .then((res) => {
         const sorted = res.sort(
           (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -39,36 +43,49 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  if (loading) return <div className="p-4 text-center">Loading...</div>;
-
   return (
-    
-    <div className="flex h-screen overflow-hidden">
-      <div className="flex flex-col flex-1">
-        <ChatHeader>
-          <div className="flex items-center justify-between w-full">
-            <Link to="/dashboard" className="text-sm text-muted-foreground ">
-              &larr; Back to AI Menu
+    <div className="flex h-screen ">
+      <div className="flex flex-col flex-1 ">
+        <Header>
+          <div className="flex">
+            <SidebarTrigger />
+            <Link 
+              to="/" 
+              className="text-sm text-muted-foreground flex items-center whitespace-nowrap"
+            >
+              <ChevronLeft className="w-5 h-5 shrink-0" strokeWidth={2.5} />
+              <span className="">Back to AI</span>
             </Link>
-            
-            <ModelSelector models={models} />
           </div>
-        </ChatHeader>
-        <main className="flex-1 p-4 overflow-y-auto">
-          <div className="max-w-3xl mx-auto space-y-4">
-            {messages.map((msg) => (
-              <ChatMessage
-                key={msg.public_id}
-                text={msg.content}
-                time={formatTime(msg.created_at)}
-                isUser={msg.sender_type === "user"}
-              />
-            ))}
-            <div ref={bottomRef} />
-          </div>
-        </main>
-        <ChatFooter userId={userId} conversationId={conversationId} setMessages={setMessages} />
+          <ModelSelector models={models} />
+        </Header>
+          {!loading
+            ? (
+              <div className="flex-1 overflow-y-auto pb-8 px-4">
+                <div className="max-w-3xl mx-auto space-y-4">
+                  {messages.map((msg) => (
+                    <ChatMessage
+                      key={msg.public_id}
+                      text={msg.content}
+                      time={formatTime(msg.created_at)}
+                      isUser={msg.sender_type === "user"}
+                    />
+                  ))}
+                  <div ref={bottomRef} />
+                </div>
+              </div>
+            )
+            : (
+              <div className="flex flex-col items-center w-full justify-center h-screen">
+                <Spinner className="w-10 h-10" />
+              </div>
+            )
+          }
+        
+        <Footer className="bg-background shadow-md z-1 px-4">
+          <ChatInput userId={userId} conversationId={conversationId} setMessages={setMessages} />
+        </Footer>
       </div>
     </div>
-  );
+  )
 }

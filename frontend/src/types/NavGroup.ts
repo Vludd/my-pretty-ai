@@ -1,6 +1,6 @@
 import type { NavItem } from "./NavItem"
 
-export interface SidebarGroup {
+export interface NavGroup {
   name: string
   items: NavItem[]
 }

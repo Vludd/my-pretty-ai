@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChatModel } from "./ChatSidebar";
-import { loadConversation, type Message } from "@/api/chat";
+import { getConversationMessages, type Message } from "@/api/chat";
 import { ChatMessage } from "./ChatMessage";
 
 function formatTime(iso: string) {
@@ -25,7 +25,7 @@ export default function ChatProvider({ userId, conversationId }: ChatProviderPro
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadConversation(userId, conversationId)
+    getConversationMessages(userId, conversationId)
       .then((res) => {
         const sorted = res.sort(
           (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()

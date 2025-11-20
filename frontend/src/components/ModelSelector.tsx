@@ -30,16 +30,16 @@ export default function ModelSelector({ models, hidden }: ModelSelectorProps) {
   }
 
   return (
-    <div className="">
+    <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild hidden={hidden}>
-          <Button variant="ghost" className="cursor-pointer">
+          <Button variant="ghost" className="flex items-center gap-1 p-0 h-8">
             <p>{selectedModel || "No Model Loaded"}</p>
-            <ChevronDown className="ml-auto" />
+            <ChevronDown className="ml-auto w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent align="end">
           <DropdownMenuLabel>AI Models</DropdownMenuLabel>
 
           {models.length === 0 ? (
