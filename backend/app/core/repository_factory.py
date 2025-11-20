@@ -6,11 +6,12 @@ from app.repositories import BaseRepository
 from app.models.conversation import MConversation
 from app.models.user import MUser
 from app.models.message import MMessage
+from app.models.prompt import MPrompt
 
 from app.repositories.conversation import ConversationRepository
 from app.repositories.user import UserRepository
 from app.repositories.message import MessageRepository
-
+from app.repositories.prompt import PromptRepository
 
 class RepositoryFactory:
     """Centralized repository factory for dependency injection."""
@@ -19,6 +20,7 @@ class RepositoryFactory:
         MConversation: ConversationRepository,
         MUser: UserRepository,
         MMessage: MessageRepository,
+        MPrompt: PromptRepository,
     }
 
     @classmethod

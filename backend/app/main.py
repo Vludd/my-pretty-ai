@@ -16,7 +16,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     lifespan=lifespan,
-    version="0.2.1"
+    version="0.3.0"
 )
 
 setup_exception_handlers(app)
