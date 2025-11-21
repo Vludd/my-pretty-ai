@@ -14,16 +14,10 @@ class PromptRepository(BaseRepository):
         except Exception as e:
             raise RepositoryError("Failed to fetch prompt by public ID", e)
 
-    async def get_all_by_user(self, user_id: int, reverse = False):
+    async def get_all_by_user(self, user_id: int):
         try:
-            stmt = (
-                select(self.model)
-                .where(self.model.user_id == user_id)
-                .order_by(
-                    desc(self.model.created_at) 
-                    if reverse 
-                    else self.model.created_at
-                )
+            stmt = select(self.model).where(
+                (self.model.is_default == True) | (self.model.user_id == user_id)
             )
             result = await self.db.execute(stmt)
             return result.scalars().all()
