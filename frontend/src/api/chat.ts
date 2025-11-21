@@ -56,11 +56,10 @@ async function fetchWithRetry(
 export async function getConversations(
   userId: string
 ): Promise<Chat[]> {
-
-  const response = await fetchWithRetry(
-    `/api/v1/conversations?user_id=${userId}`,
-    { method: "GET", headers: { "Content-Type": "application/json" } },
-  );
+  const response = await fetch(`/api/v1/conversation/all?user_id=${userId}`, {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
 
   if (!response.ok) throw new Error("Failed to fetch conversations");
 
@@ -109,7 +108,7 @@ export async function loadContext(
 ) {
 
   const response = await fetchWithRetry(
-    `/api/v1/llm/load/conversation?user_id=${userId}&conversation_id=${conversationId}`,
+    `/api/v1/llm/context/load?user_id=${userId}&conversation_id=${conversationId}`,
     { method: "POST", headers: { "Content-Type": "application/json" } },
   );
 
@@ -120,15 +119,21 @@ export async function getConversationMessages(
   userId: string,
   conversationId?: string,
 ): Promise<Message[]> {
-  
-  if (conversationId) await loadContext(userId, conversationId);
 
   const response = await fetchWithRetry(
-    `/api/v1/conversations/messages?user_id=${userId}&conversation_id=${conversationId}`,
+    `/api/v1/conversation/messages?user_id=${userId}&conversation_id=${conversationId}`,
     { method: "GET", headers: { "Content-Type": "application/json" } },
   );
+  
+  const messages = response.json() as Promise<Message[]>;
+    
+  try {
+    if (conversationId) await loadContext(userId, conversationId);
+  } catch (error) {
+    console.log(error)
+  }
 
-  return response.json() as Promise<Message[]>;
+  return messages;
 }
 
 export async function sendMessage(
@@ -155,7 +160,7 @@ export async function createChatWithMessage(
 ) {
   
   const createChatResponse = await fetch(
-    `/api/v1/conversations/create?user_id=${userId}&title=${title}`,
+    `/api/v1/conversation/create?user_id=${userId}&title=${title}`,
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },

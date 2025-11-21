@@ -10,7 +10,6 @@ export const MessageActions = ({ text, isUser }: { text: string, isUser?: boolea
       if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(text);
       } else {
-        // fallback
         const ta = document.createElement("textarea");
         ta.value = text;
         document.body.appendChild(ta);
@@ -18,7 +17,6 @@ export const MessageActions = ({ text, isUser }: { text: string, isUser?: boolea
         document.execCommand("copy");
         ta.remove();
       }
-      // можно тут показывать toast / визуальную индикацию
     } catch (e) {
       console.error("Copy failed", e);
     }
@@ -28,15 +26,13 @@ export const MessageActions = ({ text, isUser }: { text: string, isUser?: boolea
     if (!text) return;
     setPlaying(true);
     try {
-      // Подстройте endpoint под ваш бэкенд (например /api/v1/tts)
-      const res = await fetch(`/tts/generate?text=${text}`, {
+      const res = await fetch(`/tts/speech?text=${text}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
       });
 
       if (!res.ok) throw new Error("TTS request failed");
 
-      // ожидаем бинарный поток (audio/*)
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const audio = new Audio(url);
