@@ -11,7 +11,7 @@ class PromptLayerManager:
     def __init__(self):
         self.file_path = Path(SYSTEM_PROMPT_PATH)
         self.layers: Dict[str, Dict[str, Any]] = {}
-        self._parse_file()
+        # self._parse_file()
 
     def _parse_file(self):
         logger.debug(f"Reading prompt from {self.file_path}...")

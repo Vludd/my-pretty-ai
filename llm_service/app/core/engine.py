@@ -8,22 +8,17 @@ from app.schemas.context import SContextMessage
 from app.core.prompt_manager import PromptLayerManager
 
 from app.utils.logger import logger
+from datetime import datetime
 
 prompt_manager = PromptLayerManager()
 
 class LLMEngine:
-    def __init__(
-        self, 
-        llm_config: SLLMConfig, 
-        layers_order: Optional[List[str]] = None,
-        layer_variants: Optional[Dict[str, str]] = None
-    ) -> None:
+    def __init__(self, llm_config: SLLMConfig) -> None:
         self.llm_config = llm_config
         self.messages: List[Dict[str, str]] = []
         self.system_prompt = ""
         
         self._load_model(self.llm_config.model_name)
-        self.load_system_prompt(layers_order, layer_variants, True)
     
     def _load_model(self, model_name: str = ""):
         logger.info("Initializaion LLMEngine...")
@@ -56,8 +51,7 @@ class LLMEngine:
     def load_system_prompt(
         self,
         layers_order: Optional[List[str]] = None,
-        layer_variants: Optional[Dict[str, str]] = None,
-        initial_load: bool = False
+        layer_variants: Optional[Dict[str, str]] = None
     ) -> None:
         """(Re)loads the system prompt with optional layer configuration.
 
@@ -66,8 +60,8 @@ class LLMEngine:
             layer_variants (Optional[Dict[str, str]]): The layer variants.
             initial_load (bool): Whether this is the first system prompt load.
         """
-        from datetime import datetime
-        prompt_manager = PromptLayerManager()
+        
+        # prompt_manager = PromptLayerManager()
 
         # Отладка доступных слоев и вариантов
         layer_info = prompt_manager.get_layer_info()
@@ -95,12 +89,14 @@ class LLMEngine:
         else:
             self.messages.insert(0, {"role": "system", "content": self.system_prompt})
             logger.info("System prompt added")
-
-        if initial_load:
-            logger.info("System prompt initialized")
     
-    def load_conversation(self, context: List[SContextMessage]):
-        self.messages = [{"role": "system", "content": self.system_prompt}]
+    def load_conversation(
+        self, 
+        context: List[SContextMessage],
+        layers_order: Optional[List[str]] = None,
+        layer_variants: Optional[Dict[str, str]] = None
+    ):
+        self.load_system_prompt(layers_order, layer_variants)
         
         logger.debug(f"Loading context... {len(context)} messages")
         for m in context:

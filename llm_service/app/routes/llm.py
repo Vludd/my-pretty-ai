@@ -14,5 +14,7 @@ def completion(data: SCompletionRequest):
 
 @router.post("/context/load")
 def load_conversation(context: List[SContextMessage]):
-    response = LLM.load_conversation(context)
+    layers_order = ["system", "about", "rules", "safety", "personality", "relationship", "context", "time_context"]
+    layer_variants = {"personality": "free spirit", "relationship": "stranger" }
+    response = LLM.load_conversation(context, layers_order, layer_variants)
     return response
