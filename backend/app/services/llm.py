@@ -1,7 +1,7 @@
 import httpx
 
 from uuid import UUID
-from typing import List, Sequence, Union
+from typing import Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.exceptions import HTTPException
 
@@ -17,7 +17,7 @@ from app.schemas.conversation import SConversationReadFull
 from app.types.llm import ContextRole
 from app.config import LLM_URL
 from app.schemas.message import SMessageCreate
-from app.schemas.prompt import DefaultLayer, LayerWithOptions, SPromptCreate, BaseLayer, SPromptUpdate
+from app.schemas.prompt import SPromptCreate, SPromptUpdate
 from app.types.messages import SenderType
 from app.utils.logger import logger
 
@@ -353,13 +353,13 @@ class LLMService:
             logger.error("Prompt is not found!")
             raise HTTPException(status_code=404, detail="Prompt is not found!")
         
-        if not exists_prompt.user_id == exists_user.id:
-            logger.warning("User does not have access to this prompt")
-            raise HTTPException(status_code=403, detail="User does not have access to this prompt!")
-        
         if exists_prompt.is_default:
             logger.warning("Default prompt cannot be updated!")
             raise HTTPException(status_code=403, detail="Default prompt cannot be updated!")
+        
+        if not exists_prompt.user_id == exists_user.id:
+            logger.warning("User does not have access to this prompt")
+            raise HTTPException(status_code=403, detail="User does not have access to this prompt!")
         
         new_prompt_data = SPromptUpdate(
             name=data.name if data.name else exists_prompt.name,
@@ -384,13 +384,13 @@ class LLMService:
             logger.error("Prompt is not found!")
             raise HTTPException(status_code=404, detail="User is not found!")
         
-        if not exists_prompt.user_id == exists_user.id:
-            logger.warning("User does not have access to this prompt")
-            raise HTTPException(status_code=403, detail="User does not have access to this prompt!")
-        
         if exists_prompt.is_default:
             logger.warning("Default prompt cannot be deleted!")
             raise HTTPException(status_code=403, detail="Default prompt cannot be deleted!")
+        
+        if not exists_prompt.user_id == exists_user.id:
+            logger.warning("User does not have access to this prompt")
+            raise HTTPException(status_code=403, detail="User does not have access to this prompt!")
         
         is_deleted = await self.prompt_repo.delete_by_id(exists_prompt.id)
         if not is_deleted:
