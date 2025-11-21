@@ -5,6 +5,7 @@ from typing import List, Sequence, Union
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.exceptions import HTTPException
 
+from app.core.prompt_manager.parser import build_system_context
 from app.models.user import MUser
 from app.models.conversation import MConversation
 from app.models.message import MMessage
@@ -12,12 +13,15 @@ from app.models.prompt import MPrompt
 
 from app.core.repository_factory import RepositoryFactory
 
+from app.schemas.conversation import SConversationReadFull
 from app.types.llm import ContextRole
 from app.config import LLM_URL
 from app.schemas.message import SMessageCreate
 from app.schemas.prompt import DefaultLayer, LayerWithOptions, SPromptCreate, BaseLayer, SPromptUpdate
 from app.types.messages import SenderType
 from app.utils.logger import logger
+
+import app.core.exceptions as ex
 
 prompts_limit = 20
 
@@ -118,6 +122,81 @@ class LLMService:
                     detail="Unexpected error when calling LLM Service"
                 )
     
+    async def load_context(self, user_id: UUID, conversation_id: UUID, prompt_id: UUID | None = None):
+        exists_user = await self.user_repo.get_by_public_id(user_id)
+        if not exists_user:
+            raise ex.NotFoundException("User is not found!", log_level="warning")
+        
+        exists_conversation = await self.conversation_repo.get_by_public_id(conversation_id)
+        if not exists_conversation:
+            raise ex.NotFoundException("Conversation is not found!", log_level="warning")
+        
+        if exists_conversation.user_id != exists_user.id:
+            raise ex.ForbiddenException("User doesn't have access to this conversation")
+        
+        conversation_full_info = SConversationReadFull(
+            public_id=exists_conversation.public_id,
+            title=exists_conversation.title,
+            messages=None,
+            last_message=None,
+            created_at=exists_conversation.created_at,
+            updated_at=exists_conversation.updated_at
+        ).model_dump()
+        
+        messages: Sequence[MMessage] = await self.message_repo.get_all_by_conversation(exists_conversation.id)
+        last_message = messages[-1]
+        
+        conversation_full_info["messages"] = messages
+        conversation_full_info["last_message"] = last_message
+        system_prompt = {"role": "system", "content": ""}
+        
+        context: list[dict] = []
+        
+        if prompt_id:
+            exists_prompt: MPrompt = await self.prompt_repo.get_by_public_id(prompt_id)
+            
+            if exists_prompt and exists_prompt.user_id != exists_user.id:
+                ex.ForbiddenException("User doesn't have access to this prompt!")
+        
+            if exists_prompt:
+                system_prompt = build_system_context(exists_prompt)
+            else:
+                logger.warning("Prompt is not found!")
+                
+            context.append(system_prompt)
+            
+        conversation_full_info["system_prompt"] = system_prompt
+                
+        if messages:
+            for message in messages:
+                message_role = ContextRole.ASSISTANT if bool(message.sender_type == SenderType.AI) else ContextRole.USER
+                context_message = {"role": message_role.value, "content": str(message.content)}
+                context.append(context_message)
+        
+        async with httpx.AsyncClient(timeout=60.0) as client:
+            try:
+                response = await client.post(f"{LLM_URL}/context/load", json=context)
+                
+                if response.status_code == 404:
+                    raise ex.NotFoundException(f"LLM Service request error: {response.text}")
+
+                elif response.status_code == 400:
+                    raise ex.AppException(f"LLM Service request error: {response.text}")
+
+                elif not response.is_success:
+                    raise ex.InternalServerException(f"LLM Service request error: {response.text}")
+                
+                return conversation_full_info
+            
+            except httpx.ConnectTimeout:
+                raise ex.ConnectionTimeoutException("LLM Service request timeout")
+
+            except httpx.ConnectError:
+                raise ex.ServiceUnavailableException("LLM Service unavailable")
+
+            except Exception as e:
+                raise ex.InternalServerException(f"Unexpected error when calling LLM Service: {e}")
+    
     async def load_conversation(self, user_id: UUID, conversation_id: UUID):
         exists_user = await self.user_repo.get_by_public_id(user_id)
         if not exists_user:
@@ -128,6 +207,10 @@ class LLMService:
         if not exists_conversation:
             logger.error("Conversation is not found!")
             raise HTTPException(status_code=404, detail="Conversation is not found!")
+        
+        if exists_conversation.user_id != exists_user.id:
+            logger.error("User doesn't have access to this conversation!")
+            raise HTTPException(status_code=403, detail="User doesn't have access to this conversation!")
         
         context: list[dict] = []
         messages: Sequence[MMessage] = await self.message_repo.get_all_by_conversation(exists_conversation.id) # type: ignore

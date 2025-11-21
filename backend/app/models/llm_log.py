@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import Column, ForeignKey, Integer, DateTime, TEXT
 
-from app.database import Base
+from app.database.base import Base
 import app.config as cfg
 
 TABLENAME = "llm_logs"

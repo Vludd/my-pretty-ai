@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 
-from app.database import Base
+from app.database.base import Base
 import app.config as cfg
 
 TABLENAME = "prompts"
@@ -32,7 +32,7 @@ class MPrompt(Base):
     
     user_id = Column(
         ForeignKey(FK_users_id), 
-        nullable=False,
+        nullable=True,
         comment=f"FK {FK_users_id}"
     )
     

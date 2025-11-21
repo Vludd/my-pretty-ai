@@ -22,6 +22,7 @@ desktop.ini
 
 **/**/prompts/*
 !**/**/prompts/prompt.example.*
+!**/**/prompts/default_prompt.json
 
 # -------------------------
 # Virtual environments

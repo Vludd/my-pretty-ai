@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Enum, TEXT, BIGINT
 
-from app.database import Base
+from app.database.base import Base
 import app.config as cfg
 from app.types.files import FileStatus
 

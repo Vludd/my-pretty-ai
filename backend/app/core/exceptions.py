@@ -51,3 +51,16 @@ class InternalServerException(AppException):
     status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
     error_code = "internal_server_error"
     message = "Internal Server Error"
+
+
+class ServiceUnavailableException(AppException):
+    status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+    error_code = "service_unavailable"
+    message = "Service Unavailable"
+
+
+class ConnectionTimeoutException(AppException):
+    status_code = status.HTTP_504_GATEWAY_TIMEOUT
+    error_code = "connection_timeout"
+    message = "Connection Timeout"
+

@@ -29,3 +29,18 @@ class PromptRepository(BaseRepository):
             return result.scalars().all()
         except Exception as e:
             raise RepositoryError("Failed to fetch user prompts", e)
+        
+    async def get_default_prompt(self):
+        try:
+            stmt = select(self.model).where(self.model.is_default == True)
+            result = await self.db.execute(stmt)
+            return result.scalar_one_or_none()
+        except Exception as e:
+            raise RepositoryError("Failed to fetch default prompt", e)
+    
+    async def create_default_prompt(self, data: dict):
+        exists = await self.get_default_prompt()
+        if exists:
+            return
+        
+        await self.create(data)

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, TEXT, Enum
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.database import Base
+from app.database.base import Base
 import app.config as cfg
 from app.types.messages import SenderType
 
