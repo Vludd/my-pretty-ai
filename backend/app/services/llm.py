@@ -164,6 +164,15 @@ class LLMService:
                 logger.warning("Prompt is not found!")
                 
             context.append(system_prompt)
+        else:
+            exists_default_prompt: MPrompt = await self.prompt_repo.get_default_prompt()
+            
+            if exists_default_prompt:
+                system_prompt = build_system_context(exists_default_prompt)
+            else:
+                logger.warning("Default prompt is not found!")
+                
+            context.append(system_prompt)
             
         conversation_full_info["system_prompt"] = system_prompt
                 
