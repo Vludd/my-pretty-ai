@@ -37,7 +37,7 @@ async def get_prompt(user_id: UUID, prompt_id: UUID, service: LLMServiceDep):
     response = await service.get_prompt(user_id, prompt_id)
     return response
 
-@router.put("/prompt", response_model=SPromptRead, description="Update user prompt")
+@router.patch("/prompt", response_model=SPromptRead, description="Update user prompt")
 async def update_prompt(user_id: UUID, prompt_id: UUID, data: SPromptUpdate, service: LLMServiceDep):
     response = await service.update_prompt(user_id, prompt_id, data)
     return response
