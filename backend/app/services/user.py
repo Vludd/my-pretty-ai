@@ -1,18 +1,17 @@
-from uuid import UUID
-from sqlalchemy.ext.asyncio import AsyncSession
+import logging
 from datetime import datetime, timezone
+from uuid import UUID
 
 from fastapi.exceptions import HTTPException
-
-from app.models.user import MUser
-
-from app.schemas.user import SUserCreate, SUserRead, SUserUpdate, SUserLogin, SToken
+from passlib.hash import argon2
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.repository_factory import RepositoryFactory
+from app.models.user import MUser
+from app.schemas.user import (SToken, SUserCreate, SUserLogin, SUserRead,
+                              SUserUpdate)
 
-from passlib.hash import argon2
-
-from app.utils.logger import logger
+logger = logging.getLogger(__name__)
 
 class UserService:
     def __init__(self, db_session: AsyncSession):

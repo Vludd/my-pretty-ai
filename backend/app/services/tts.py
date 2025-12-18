@@ -1,14 +1,16 @@
-import httpx
-
-from uuid import UUID
+import logging
 from typing import List, Sequence
-from sqlalchemy.ext.asyncio import AsyncSession
+from uuid import UUID
+
+import httpx
 from fastapi.exceptions import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import LLM_URL
 from app.schemas.message import SMessageCreate
 from app.types.messages import SenderType
-from app.utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 class TTSService:
     def __init__(self, db_session: AsyncSession):

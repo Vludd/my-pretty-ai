@@ -1,7 +1,10 @@
+import logging
+
 from app.models.prompt import MPrompt
 from app.schemas.prompt import DefaultLayer, LayerWithOptions
-from app.utils.logger import logger
 from app.utils.dict_converter import dict_to_layer, dict_to_option
+
+logger = logging.getLogger(__name__)
 
 def build_system_context(prompt: MPrompt) -> dict:
     system_prompt: str = ""

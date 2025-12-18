@@ -1,13 +1,17 @@
+import logging
 from pathlib import Path
-from sqlalchemy import text, MetaData
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+
+from sqlalchemy import MetaData, text
+from sqlalchemy.ext.asyncio import (AsyncSession, async_sessionmaker,
+                                    create_async_engine)
 
 import app.config as cfg
-from app.core.prompt_manager.importer import import_prompt_json
-from app.models.prompt import MPrompt
 from app.database.base import Base
+from app.models.prompt import MPrompt
+from app.modules.prompt_manager.importer import import_prompt_json
 from app.repositories.prompt import PromptRepository
-from app.utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 DATABASE_URL = f"postgresql+asyncpg://{cfg.DB_USER}:{cfg.DB_PASSWORD}@{cfg.DB_HOST}:{cfg.DB_PORT}/{cfg.DB_NAME}"
 

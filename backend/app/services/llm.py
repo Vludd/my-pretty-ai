@@ -1,3 +1,4 @@
+import logging
 from typing import Sequence
 from uuid import UUID
 
@@ -7,18 +8,19 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 import app.core.exceptions as ex
 from app.config import LLM_URL
-from app.core.prompt_manager.parser import build_system_context
 from app.core.repository_factory import RepositoryFactory
 from app.models.conversation import MConversation
 from app.models.message import MMessage
 from app.models.prompt import MPrompt
 from app.models.user import MUser
+from app.modules.prompt_manager.parser import build_system_context
 from app.schemas.conversation import SConversationReadFull
 from app.schemas.message import SMessageCreate
 from app.schemas.prompt import SPromptCreate, SPromptUpdate
 from app.types.llm import ContextRole
 from app.types.messages import SenderType
-from app.utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 prompts_limit = 20
 

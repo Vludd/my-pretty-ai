@@ -1,4 +1,6 @@
 import logging
+import sys
+
 import colorlog
 
 from app.config import DEBUG
@@ -12,58 +14,22 @@ LOG_LEVEL_COLORS = {
 }
 
 formatter = colorlog.ColoredFormatter(
-    fmt="%(log_color)s%(levelname)-9s%(reset)s (%(cyan)s%(name)s%(reset)s) %(message)s",
+    fmt="%(log_color)s%(levelname)-8s%(reset)s "
+        "(%(cyan)s%(name)s%(reset)s) %(message)s",
     log_colors=LOG_LEVEL_COLORS,
-    reset=True,
-    style="%",
 )
 
-class Logger:
-    def __init__(
-        self, 
-        log_level="INFO",
-        exclude_logs=[
-            "sqlalchemy.engine.Engine",
-            "watchfiles"
-        ]
-    ) -> None:
-        handler = logging.StreamHandler()
-        handler.setFormatter(formatter)
+def setup_logging():
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(formatter)
 
-        logger = logging.getLogger()
-        logger.setLevel(log_level)
-        logger.addHandler(handler)
-        logger.propagate = False
-        
-        for exclude in exclude_logs:
-            logging.getLogger(exclude).setLevel(logging.WARNING)
-        
-        self._logger = logger
-        
+    root_logger = logging.getLogger()
+    root_logger.setLevel(logging.DEBUG if DEBUG else logging.INFO)
+    root_logger.handlers.clear()
+    root_logger.addHandler(handler)
+    
+    logging.getLogger("sqlalchemy.pool").setLevel(logging.WARNING)
+    logging.getLogger("sqlalchemy.engine.Engine").setLevel(logging.WARNING)
+    logging.getLogger("watchfiles").setLevel(logging.WARNING)
 
-        logger.debug(f"Logger initialized. Level: {log_level}")
-    
-    def info(self, message="Test info log..."):
-        self._logger.info(message)
-    
-    def debug(self, message="Test debug log..."):
-        self._logger.debug(message)
-    
-    def warning(self, message="Test warning log..."):
-        self._logger.warning(message)
-    
-    def error(self, message="Test error log..."):
-        self._logger.error(message)
-    
-    def critical(self, message="Test critical log..."):
-        self._logger.critical(message)
-        
-    def exception(self, message="Test exception log..."):
-        self._logger.exception(message)
-        
-    def set_level(self, level="INFO"):
-        self._logger.setLevel(level)
-        
-exclude_loggers: list[str] = []
-logger = Logger("DEBUG" if DEBUG else "INFO", exclude_logs=exclude_loggers)
-        
+    root_logger.debug(f"Logging initialized with DEBUG level")

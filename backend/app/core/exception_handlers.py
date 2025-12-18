@@ -1,7 +1,11 @@
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+
 from app.core.exceptions import AppException
-from app.utils.logger import logger
+
+logger = logging.getLogger(__name__)
 
 def setup_exception_handlers(app: FastAPI):
     """Global exception handlers registration."""
