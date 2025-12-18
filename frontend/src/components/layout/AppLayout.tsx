@@ -8,6 +8,9 @@ import AIPage from "@/pages/Ai";
 
 import { UserProvider } from "@/context/UserProvider";
 import { ConversationsPage } from "@/pages/Conversations";
+import { PromptEditorPage } from "@/pages/PromptEditor";
+import { PromptPreview } from "@/pages/PromptPreview";
+import { PromptCreator } from "@/pages/PromptCreator";
 
 export default function AppLayout() {
   const userId = "c602e0b8-464c-431e-a5aa-f6098d27defb";
@@ -24,6 +27,9 @@ export default function AppLayout() {
               <Route path="/c/:conversationId" element={<ChatPage />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/p/edit/:promptId" element={<PromptEditorPage />} />
+              <Route path="/p/new" element={<PromptCreator />} />
+              {/* <Route path="/p/:promptId" element={<PromptPreview />} /> */}
             </Routes>
           </main>
         </SidebarProvider>

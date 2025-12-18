@@ -1,4 +1,4 @@
-import { getConversations, getLastMessage } from "@/api/chat";
+import { getConversations, getLastMessage } from "@/api/conversations";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { SidebarTrigger } from "@/components/ui/sidebar";

@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { MessageActions } from "./MessageActions";
+import { MessageActions } from "@/components/ai/MessageActions";
 
 interface ChatMessageProps {
   text: string;

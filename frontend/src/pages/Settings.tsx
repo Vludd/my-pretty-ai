@@ -1,18 +1,32 @@
+import { getUserPrompts } from "@/api/prompts";
 import LanguageDropdown from "@/components/LanguageDropdown";
 import { Header } from "@/components/layout/Header";
-import { ModeSelector } from "@/components/mode-selector";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { ModeSelector } from "@/components/theme/mode-selector";
+import PromptManager from "@/components/PromptManager";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { promptLayers } from "@/data/promptLayers";
+import { useUser } from "@/context/useUser";
+import type { PromptModel } from "@/types/Prompt";
+import { useEffect, useState } from "react";
 
 const languages = [
   "English",
 ];
 
 export default function Settings() {
+  const { userId } = useUser();
+  const [prompts, setPrompts] = useState<PromptModel[]>([])
+  const [promptsFetching, setPromptsFetching] = useState(true)
+
+  useEffect(() => {
+    getUserPrompts(userId)
+    .then((res) => {
+      setPrompts(res);
+    })
+    .finally(() => setPromptsFetching(false));
+  }, [userId])
+
   return (
     <div>
       <Header>
@@ -57,39 +71,7 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardTitle className="px-4">Prompt Manager (In dev)</CardTitle>
-          <CardContent className="flex flex-col gap-4">
-            <div className="flex flex-col gap-4">
-              {promptLayers.map(layer => (
-                <div className="flex justify-between items-start" key={layer.id}>
-                  <div className="flex items-start gap-3">
-                    <Checkbox id={layer.id} defaultChecked={layer.enabled} disabled={!layer.editable} />
-                    <div className="grid gap-2">
-                      <Label htmlFor={layer.id}>{layer.name}</Label>
-                      <p className="text-muted-foreground text-sm">
-                        {layer.description}
-                      </p>
-                    </div>
-                  </div>
-                  {layer.editable && (
-                    <Button 
-                      className="mt-2" 
-                      size="sm" 
-                      variant="outline" 
-                    >
-                      Edit
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-end gap-2">
-            <Button variant="ghost">Reset</Button>
-            <Button variant="default" disabled>Save</Button>
-          </CardFooter>
-        </Card>
+        <PromptManager prompts={prompts} loading={promptsFetching}/>
         <p className="text-muted-foreground text-xs text-center">
           MyPrettyAI v{__APP_VERSION__}
         </p>

@@ -1,7 +1,6 @@
-import { ChatMessage } from "@/components/chat/ChatMessage";
+import { ChatMessage } from "@/components/ai/ChatMessage";
 import { useEffect, useRef, useState } from "react";
-import { getConversationMessages, type Message } from "@/api/chat";
-import { ChatInput } from "@/components/chat/ChatInput";
+import { ChatInput } from "@/components/ai/ChatInput";
 import ModelSelector from "@/components/ModelSelector";
 import type { AIModel } from "@/types/AiModel";
 import { Link, useParams } from "react-router-dom";
@@ -12,6 +11,11 @@ import { ChevronLeft } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Spinner } from "@/components/ui/spinner";
+import PromptSelector from "@/components/PromptSelector";
+import type { Message } from "@/types/Message";
+import { getUserPrompts } from "@/api/prompts";
+import type { PromptModel } from "@/types/Prompt";
+import { getConversationMessages } from "@/api/messages";
 
 const models: AIModel[] = [
   { title: "Qwen3-4B", modelName: "Qwen3-4B model", downloaded: true },
@@ -21,11 +25,13 @@ const models: AIModel[] = [
 
 export default function ChatPage() {
   const { userId } = useUser();
-
   const { conversationId } = useParams();
 
   const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [prompts, setPrompts] = useState<PromptModel[]>([]);
+
+  const [messagesFetching, setMessagesFetching] = useState(true);
+  const [promptsFetching, setPromptsFetching] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -36,8 +42,16 @@ export default function ChatPage() {
         );
         setMessages(sorted);
       })
-      .finally(() => setLoading(false));
+      .finally(() => setMessagesFetching(false));
   }, [conversationId, userId]);
+
+  useEffect(() => {
+    getUserPrompts(userId)
+    .then((res) => {
+      setPrompts(res);
+    })
+    .finally(() => setPromptsFetching(false));
+  }, [userId])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -57,9 +71,10 @@ export default function ChatPage() {
               <span className="">Back to AI</span>
             </Link>
           </div>
-          <ModelSelector models={models} />
+          <PromptSelector prompts={prompts} loading={promptsFetching} />
+          <ModelSelector models={models} loading={promptsFetching} />
         </Header>
-          {!loading
+          {!messagesFetching
             ? (
               <div className="flex-1 overflow-y-auto pb-8 px-4">
                 <div className="max-w-3xl mx-auto space-y-4">

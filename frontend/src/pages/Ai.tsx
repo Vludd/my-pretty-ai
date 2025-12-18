@@ -1,4 +1,4 @@
-import { createChatWithMessage, getConversations as getConversations, getLastMessage } from "@/api/chat";
+import { createConversation, getConversations as getConversations } from "@/api/conversations";
 import AIChatList from "@/components/ai/ChatList";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { generateChatTitle } from "@/utils/generateChatTitle";
+import { getLastMessage } from "@/api/messages";
 
 export default function AIPage() {
   const navigate = useNavigate();
@@ -48,7 +49,7 @@ export default function AIPage() {
 
       const title = generateChatTitle(trimmed);
 
-      const res = await createChatWithMessage(userId, trimmed, title);
+      const res = await createConversation(userId, trimmed, title);
 
       navigate(`/c/${res.conversationId}`);
     } catch (err) {
@@ -106,8 +107,7 @@ export default function AIPage() {
         <SidebarTrigger />
       </Header>
 
-      {!errorMsg 
-      ? (
+      {!errorMsg ? (
         <div className="flex flex-col justify-center h-screen min-w-0 w-full items-center p-2 gap-4">
           {!fetchingChats && (
             <div className="w-full max-w-3xl flex items-end gap-1 rounded-3xl border bg-muted/50 p-2 shadow-sm">
@@ -125,7 +125,7 @@ export default function AIPage() {
                 ref={textareaRef}
                 rows={1}
                 disabled={creatingConversation}
-                placeholder="Do you want to chat? :3"
+                placeholder="Would you like to chat? :3"
                 className="flex-1 resize-none border-none min-h-[10px] max-h-[200px] !bg-transparent p-2 focus-visible:ring-0"
                 onInput={handleInput}
                 onKeyDown={(e) => {

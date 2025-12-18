@@ -16,6 +16,7 @@ import type { AIModel } from "@/types/AiModel";
 
 interface ModelSelectorProps {
   models: AIModel[]
+  loading?: boolean
   hidden?: boolean
 }
 

@@ -1,7 +1,7 @@
 import type { Chat } from "@/types/Chat";
 import { ChevronRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 
 interface Props {
   chats: Chat[]

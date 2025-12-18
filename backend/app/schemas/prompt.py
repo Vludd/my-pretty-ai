@@ -1,15 +1,13 @@
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import List, Optional, Union
-from dataclasses import dataclass, field
-
-from pydantic import Field
 from uuid import UUID
 
-from app.schemas import BaseConfig
+from pydantic import Field
 
+from app.schemas import BaseConfig
 from app.types.prompt import LayerType
-from typing import List, Optional
-from dataclasses import dataclass, field
+
 
 @dataclass
 class LayerOption:

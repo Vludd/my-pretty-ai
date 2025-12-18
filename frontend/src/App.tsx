@@ -1,7 +1,7 @@
 import './App.css'
 import AppLayout from '@/components/layout/AppLayout'
 
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/components/theme/theme-provider"
 
 function App() {
   return (

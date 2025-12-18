@@ -1,10 +1,12 @@
-import { sendMessage, type Message } from "@/api/chat";
+
+import type { Message } from "@/types/Message";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Mic, Plus, SendHorizontalIcon } from "lucide-react";
 import { useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
+import { sendMessage } from "@/api/messages";
 
 interface FooterProps {
   userId: string;
@@ -82,7 +84,7 @@ export const ChatInput = ({ userId, conversationId, setMessages }: FooterProps) 
             ref={textareaRef}
             rows={1}
             disabled={responding}
-            placeholder="You want to chat? ;)"
+            placeholder="Hey! What's up? ;)"
             className="flex-1 resize-none border-none min-h-[10px] max-h-[200px] !bg-transparent p-2 focus-visible:ring-0"
             onInput={handleInput}
             onKeyDown={(e) => {
