@@ -31,6 +31,7 @@ class MConversation(Base):
     )
     
     user_id = Column(
+        Integer,
         ForeignKey(FK_users_id), 
         nullable=False,
         comment=f"FK {FK_users_id}"

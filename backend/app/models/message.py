@@ -1,11 +1,12 @@
 import uuid
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, TEXT, Enum
+from sqlalchemy import (TEXT, Column, DateTime, Enum, ForeignKey, Integer,
+                        String)
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.database.base import Base
 import app.config as cfg
+from app.database.base import Base
 from app.types.messages import SenderType
 
 TABLENAME = "messages"
@@ -32,6 +33,7 @@ class MMessage(Base):
     )
     
     conversation_id = Column(
+        Integer,
         ForeignKey(FK_conversations_id), 
         nullable=False,
         comment=f"FK {FK_conversations_id}"
