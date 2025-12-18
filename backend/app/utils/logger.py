@@ -64,6 +64,6 @@ class Logger:
     def set_level(self, level="INFO"):
         self._logger.setLevel(level)
         
-exclude_loggers = []
+exclude_loggers: list[str] = []
 logger = Logger("DEBUG" if DEBUG else "INFO", exclude_logs=exclude_loggers)
         

@@ -1,27 +1,24 @@
-import httpx
-
-from uuid import UUID
 from typing import Sequence
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.exceptions import HTTPException
+from uuid import UUID
 
+import httpx
+from fastapi.exceptions import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+
+import app.core.exceptions as ex
+from app.config import LLM_URL
 from app.core.prompt_manager.parser import build_system_context
-from app.models.user import MUser
+from app.core.repository_factory import RepositoryFactory
 from app.models.conversation import MConversation
 from app.models.message import MMessage
 from app.models.prompt import MPrompt
-
-from app.core.repository_factory import RepositoryFactory
-
+from app.models.user import MUser
 from app.schemas.conversation import SConversationReadFull
-from app.types.llm import ContextRole
-from app.config import LLM_URL
 from app.schemas.message import SMessageCreate
 from app.schemas.prompt import SPromptCreate, SPromptUpdate
+from app.types.llm import ContextRole
 from app.types.messages import SenderType
 from app.utils.logger import logger
-
-import app.core.exceptions as ex
 
 prompts_limit = 20
 
@@ -331,7 +328,7 @@ class LLMService:
             logger.error("Prompt is not found!")
             raise HTTPException(status_code=404, detail="Prompt is not found!")
    
-        if not exists_prompt.user_id == exists_user.id:
+        if not exists_prompt.user_id == exists_user.id and not exists_prompt.is_default:
             logger.warning("User does not have access to this prompt")
             raise HTTPException(status_code=403, detail="User does not have access to this prompt!")
         
