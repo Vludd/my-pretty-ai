@@ -1,42 +1,43 @@
-import uuid
 from datetime import datetime, timezone
+from uuid import UUID as PyUUID
+from uuid import uuid4
 
-from sqlalchemy import Column, Integer, String, DateTime
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import DateTime, Integer, String
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy.orm import Mapped, mapped_column
 
-from app.database.base import Base
 import app.config as cfg
+from app.database.base import Base
 
-TABLENAME = "users"
 
 class MUser(Base):
-    __tablename__ = TABLENAME
+    __tablename__ = "users"
     __table_args__ = ({"schema": cfg.DB_SCHEMA} if cfg.DB_SCHEMA != "public" else {})
     
-    id = Column(
+    id: Mapped[int] = mapped_column(
         Integer, 
         primary_key=True, 
         index=True,
         comment="PK"
     )
     
-    public_id = Column(
-        UUID(as_uuid=True),
+    public_id: Mapped[PyUUID] = mapped_column(
+        PGUUID(as_uuid=True),
         unique=True,
         index=True,
         nullable=False,
-        default=uuid.uuid4,
+        default=uuid4,
         comment="Public UUID of user"
     )
     
-    username = Column(
+    username: Mapped[str] = mapped_column(
         String(50),
         nullable=False,
         index=True,
         comment="Username"
     )
     
-    email = Column(
+    email: Mapped[str] = mapped_column(
         String(255), 
         nullable=False,
         unique=True,
@@ -44,27 +45,27 @@ class MUser(Base):
         comment="User Email"
     )
     
-    password_hash = Column(
+    password_hash: Mapped[str] = mapped_column(
         String(255), 
         nullable=True, 
         default=None,
         comment="User password (hashed)"
     )
     
-    created_at = Column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         comment="Created At"
     )
     
-    updated_at = Column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc),
         comment="Updated At"
     )
     
-    last_login_at = Column(
+    last_login_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=True,
         default=None,

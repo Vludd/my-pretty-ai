@@ -1,10 +1,11 @@
 from uuid import UUID
-from sqlalchemy import select, desc
 
-from app.repositories import BaseRepository
-from app.models.conversation import MConversation
+from sqlalchemy import desc, select
 
 from app.core.exceptions import RepositoryError
+from app.models import MConversation
+from app.repositories import BaseRepository
+
 
 class ConversationRepository(BaseRepository):
     async def get_by_public_id(self, public_id: UUID) -> MConversation | None:
@@ -15,12 +16,12 @@ class ConversationRepository(BaseRepository):
         except Exception as e:
             raise RepositoryError("Failed to fetch conversation by public ID", e)
         
-        
     async def get_all_by_user(self, user_id: int, reverse = False):
         try:
             stmt = (
                 select(self.model)
                 .where(self.model.user_id == user_id)
+                .where(self.model.deleted != True)
                 .order_by(
                     desc(self.model.created_at) 
                     if reverse 

@@ -5,9 +5,11 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import JWT_ALGORITHM, JWT_SECRET_KEY
 from app.database import get_db
 from app.services.conversation import ConversationService
 from app.services.llm import LLMService
+from app.services.prompt import PromptService
 from app.services.tts import TTSService
 from app.services.user import UserService
 
@@ -17,16 +19,15 @@ def get_conversation_service(db: DBSessionDep) -> ConversationService: return Co
 def get_llm_service(db: DBSessionDep) -> LLMService: return LLMService(db)
 def get_tts_service(db: DBSessionDep) -> TTSService: return TTSService(db)
 def get_user_service(db: DBSessionDep) -> UserService: return UserService(db)
+def get_prompt_service(db: DBSessionDep) -> PromptService: return PromptService(db)
 
 ConversationServiceDep = Annotated[ConversationService, Depends(get_conversation_service)]
 LLMServiceDep = Annotated[LLMService, Depends(get_llm_service)]
 TTSServiceDep = Annotated[TTSService, Depends(get_tts_service)]
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
+PromptsServiceDep = Annotated[PromptService, Depends(get_prompt_service)]
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
-
-SECRET_KEY = "your-secret-key"
-ALGORITHM = "HS256"
 
 async def get_current_user(
     token: str = Depends(oauth2_scheme),
@@ -39,7 +40,7 @@ async def get_current_user(
     )
     
     try:
-        payload: dict = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload: dict = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
         user_id: str = payload.get("sub", "")
         if user_id is None:
             raise credentials_exception

@@ -1,8 +1,9 @@
-from sqlalchemy import select, desc
+from sqlalchemy import desc, select
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import RepositoryError
+
 
 class BaseRepository:
     def __init__(self, db_session: AsyncSession, model):
@@ -21,6 +22,8 @@ class BaseRepository:
             return instance
         except Exception as e:
             await self.db.rollback()
+            import traceback
+            print(traceback.format_exc())
             raise RepositoryError(f"Failed to create {self.model.__name__}", e)
 
     # =========================================
@@ -95,4 +98,10 @@ class BaseRepository:
         instance = await self.get_by_id(id)
         if not instance:
             raise RepositoryError(f"{self.model.__name__} with ID {id} not found")
+        return await self.delete(instance)
+        return await self.delete(instance)
+        return await self.delete(instance)
+        return await self.delete(instance)
+        return await self.delete(instance)
+        return await self.delete(instance)
         return await self.delete(instance)

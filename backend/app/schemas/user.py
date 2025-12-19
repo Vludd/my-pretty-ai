@@ -1,12 +1,11 @@
-from pydantic import model_serializer, Field
-from uuid import UUID
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+from uuid import UUID
+
+from pydantic import Field, model_serializer
 
 from app.schemas import BaseConfig
 
-class SToken(BaseConfig):
-    access_token: str
 
 class SUserLogin(BaseConfig):
     username: str = Field(..., min_length=2, max_length=50, examples=["YourBunnyWrote123"])
