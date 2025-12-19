@@ -1,14 +1,14 @@
 from uuid import UUID
+
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.schemas.conversation import SConversationCreate, SConversationReadFull
-
-from app.models.user import MUser
-from app.models.conversation import MConversation
-from app.models.message import MMessage
-
-from app.core.repository_factory import RepositoryFactory
 
 import app.core.exceptions as ex
+from app.core.repository_factory import RepositoryFactory
+from app.models.conversation import MConversation
+from app.models.message import MMessage
+from app.models.user import MUser
+from app.schemas.conversation import SConversationCreate, SConversationReadFull
+
 
 class ConversationService:
     def __init__(self, db_session: AsyncSession):
@@ -17,7 +17,7 @@ class ConversationService:
         self.conversation_repo = RepositoryFactory.get_repository(MConversation, db_session)
         self.message_repo = RepositoryFactory.get_repository(MMessage, db_session)
         
-    async def get_conversation_info(self, user_id: UUID, conversation_id: UUID):
+    async def get_conversation_info(self, user_id: UUID, conversation_id: UUID) -> SConversationReadFull:
         exists_user = await self.user_repo.get_by_public_id(user_id)
         if not exists_user:
             raise ex.NotFoundException("User is not found!", log_level="warning")
@@ -44,9 +44,9 @@ class ConversationService:
         conversation_full_info["messages"] = messages
         conversation_full_info["last_message"] = last_message
         
-        return conversation_full_info
+        return SConversationReadFull(**conversation_full_info)
         
-    async def create_conversation(self, user_id: UUID, title: str):
+    async def create_conversation(self, user_id: UUID, title: str) -> SConversationReadFull:
         exists_user = await self.user_repo.get_by_public_id(user_id)
         if not exists_user:
             raise ex.NotFoundException("User is not found!", log_level="warning")
@@ -58,7 +58,7 @@ class ConversationService:
         if not created_conversation:
             raise ex.InternalServerException("Conversation is not created!")
     
-        return {"public_id": created_conversation.public_id}
+        return SConversationReadFull(**created_conversation)
     
     async def get_conversation_messages(self, user_id: UUID, conversation_id: UUID):
         exists_user = await self.user_repo.get_by_public_id(user_id)

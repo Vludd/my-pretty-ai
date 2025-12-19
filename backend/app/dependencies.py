@@ -1,13 +1,15 @@
 from typing import Annotated
-from fastapi import Depends
+
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from jose import JWTError, jwt
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.database import get_db
 from app.services.conversation import ConversationService
 from app.services.llm import LLMService
 from app.services.tts import TTSService
 from app.services.user import UserService
-
-from app.database import get_db
 
 DBSessionDep = Annotated[AsyncSession, Depends(get_db)]
 
@@ -20,3 +22,32 @@ ConversationServiceDep = Annotated[ConversationService, Depends(get_conversation
 LLMServiceDep = Annotated[LLMService, Depends(get_llm_service)]
 TTSServiceDep = Annotated[TTSService, Depends(get_tts_service)]
 UserServiceDep = Annotated[UserService, Depends(get_user_service)]
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+
+SECRET_KEY = "your-secret-key"
+ALGORITHM = "HS256"
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    user_service: UserService = Depends(get_user_service)
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    
+    try:
+        payload: dict = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        user_id: str = payload.get("sub", "")
+        if user_id is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    user = await user_service.get_by_public_id(user_id)
+    if not user:
+        raise credentials_exception
+    
+    return user
